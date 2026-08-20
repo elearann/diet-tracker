@@ -39,7 +39,7 @@
   header h1{
     font-family: 'Fraunces', serif;
     font-weight:600;
-    font-size: 1.1rem;
+    font-size:18px;
     margin:0;
     letter-spacing: -0.01em;
   }
@@ -47,7 +47,7 @@
     position:absolute;
     right:16px;
     top:16px;
-    font-size:0.72rem;
+    font-size:12px;
     color: var(--accent);
     opacity:0;
     transition: opacity .3s;
@@ -62,10 +62,10 @@
     text-align:center;
     padding: 60px 20px;
   }
-  #auth-bar p{ color: var(--ink-soft); font-size:0.9rem; margin-bottom:18px; }
+  #auth-bar p{ color: var(--ink-soft); font-size:14px; margin-bottom:18px; }
   button{
     font-family:'Inter',sans-serif;
-    font-size:0.78rem;
+    font-size:12px;
     border:1px solid var(--line);
     background: var(--surface);
     color: var(--ink);
@@ -81,7 +81,7 @@
   button.danger{ color: var(--danger); border-color: var(--line); }
   button.danger:hover{ background: var(--danger-soft); border-color: var(--danger-soft); }
   #tabs{ display:flex; gap:6px; margin-bottom:10px; }
-  #tabs button{ flex:1; font-size:0.76rem; padding:7px 8px; }
+  #tabs button{ flex:1; font-size:12px; padding:7px 8px; }
   #tabs button.active{ border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight:500; }
   .card{
     background: var(--surface);
@@ -93,14 +93,14 @@
   .card h2{
     font-family:'Fraunces',serif;
     font-weight:600;
-    font-size:0.88rem;
+    font-size:14px;
     margin:0 0 8px;
     color: var(--accent);
   }
-  .card-sub{ font-size:0.64rem; color: var(--ink-faint); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.03em; }
+  .card-sub{ font-size:10px; color: var(--ink-faint); margin:0 0 4px; text-transform:uppercase; letter-spacing:0.03em; }
   .chip-row{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:9px; }
   .chip{
-    font-size:0.72rem;
+    font-size:12px;
     padding:5px 9px;
     border-radius:7px;
     border:1px solid var(--line);
@@ -113,9 +113,13 @@
   .chip.active-diet-oui{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
   .chip.active-diet-partiel{ background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
   .chip.active-diet-non{ background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+  input[type=text], input[type=date], textarea, button{
+    margin:0;
+    line-height:1.2;
+  }
   input[type=text], input[type=date], textarea{
     font-family:'Inter',sans-serif;
-    font-size:0.76rem;
+    font-size:13px;
     padding:5px 7px;
     border:1px solid var(--line);
     border-radius:7px;
@@ -123,24 +127,27 @@
     color:var(--ink);
     width:100%;
     height:30px;
+    box-sizing:border-box;
+    display:block;
   }
+  .field-label{ font-size:11px; color: var(--ink-faint); display:block; margin:0 0 2px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #entry-grid > div{ display:block; }
+  #entry-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px 6px; margin-bottom:8px; }
   input[type=date]{ max-width:135px; color-scheme: light; }
   input:focus, textarea:focus{ outline:none; border-color: var(--accent); background:var(--surface); }
-  .field-label{ font-size:0.6rem; color: var(--ink-faint); display:block; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .note-input{ margin-bottom:8px; height:30px; }
+  .note-input{ margin-bottom:8px; }
   .btn-row{ display:flex; gap:6px; }
   .btn-row button{ flex:1; }
-  #entry-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px 6px; margin-bottom:8px; }
   #cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-  #cal-nav span{ font-size:0.76rem; font-weight:500; }
-  #cal-nav i{ cursor:pointer; font-style:normal; font-size:0.95rem; color: var(--ink-faint); padding:3px 7px; }
+  #cal-nav span{ font-size:12px; font-weight:500; }
+  #cal-nav i{ cursor:pointer; font-style:normal; font-size:15px; color: var(--ink-faint); padding:3px 7px; }
   #cal-dow{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:2px; }
-  #cal-dow span{ font-size:0.56rem; color: var(--ink-faint); text-align:center; }
+  #cal-dow span{ font-size:9px; color: var(--ink-faint); text-align:center; }
   #cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:7px; }
   .cal-day{
     height:25px;
     display:flex; align-items:center; justify-content:center; gap:2px;
-    font-size:0.66rem; color: var(--ink-soft);
+    font-size:11px; color: var(--ink-soft);
     border-radius:5px; background: var(--bg);
     cursor:pointer;
   }
@@ -151,25 +158,25 @@
   .dot-sport{ background: var(--accent); }
   .dot-diet{ background: var(--warn); }
   #cal-legend{ display:flex; gap:10px; }
-  #cal-legend span{ font-size:0.62rem; color: var(--ink-soft); display:flex; align-items:center; gap:3px; }
+  #cal-legend span{ font-size:10px; color: var(--ink-soft); display:flex; align-items:center; gap:3px; }
   #metric-picker{ display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px; }
   .metric-chip{
-    font-size:0.66rem; padding:3px 7px; border-radius:6px;
+    font-size:11px; padding:3px 7px; border-radius:6px;
     border:1px solid var(--line); background:var(--surface); color: var(--ink-soft); cursor:pointer;
   }
   .metric-chip.active{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
   #scale-picker{ display:flex; gap:4px; margin-bottom:8px; }
   .scale-chip{
-    font-size:0.66rem; padding:3px 8px; border-radius:6px;
+    font-size:11px; padding:3px 8px; border-radius:6px;
     border:1px solid var(--line); background:var(--surface); color: var(--ink-soft); cursor:pointer;
   }
   .scale-chip.active{ background: var(--bg); color: var(--ink); font-weight:500; border-color:var(--line); }
   #chart-wrap{ position:relative; height:120px; margin-bottom:4px; }
-  #chart-hint{ font-size:0.62rem; color: var(--ink-faint); margin:0; }
+  #chart-hint{ font-size:10px; color: var(--ink-faint); margin:0; }
   .setup-note{
     max-width:480px; margin:20px auto; padding:14px 18px;
     background: var(--warn-soft); border:1px solid var(--warn);
-    border-radius:10px; font-size:0.85rem; color:#5c4413; display:none;
+    border-radius:10px; font-size:14px; color:#5c4413; display:none;
   }
 </style>
 </head>
@@ -189,7 +196,7 @@
   <div id="auth-bar">
     <p>Connecte-toi pour accéder à ton suivi.</p>
     <button class="primary" id="btn-signin">Se connecter avec Google</button>
-    <p id="status-line" style="margin-top:14px;font-size:0.8rem;color:var(--ink-faint);"></p>
+    <p id="status-line" style="margin-top:14px;font-size:13px;color:var(--ink-faint);"></p>
   </div>
 
   <div id="app" style="display:none;">
