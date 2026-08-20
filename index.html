@@ -5,22 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Régime / Muscu Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #f5f3ee;
-    --surface: #fffefb;
-    --line: #ddd9cd;
-    --line-soft: #ece9df;
-    --ink: #23261f;
-    --ink-soft: #6f7365;
-    --ink-faint: #a2a596;
-    --accent: #22543f;
-    --accent-soft: #e2ebe3;
-    --warn: #a5720f;
-    --warn-soft: #f3e8d3;
-    --danger: #963f31;
-    --danger-soft: #f2e2dd;
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-1: #f1efe8;
+    --line: #e4e4e1;
+    --line-strong: #d3d1c7;
+    --ink: #1c1c1a;
+    --ink-soft: #5f5e5a;
+    --ink-faint: #888780;
+    --accent: #185fa5;
+    --accent-border: #378add;
+    --accent-soft: #e6f1fb;
+    --warn: #854f0b;
+    --warn-soft: #faeeda;
+    --danger: #a32d2d;
+    --danger-soft: #fcebeb;
   }
   *{box-sizing:border-box;}
   body{
@@ -31,28 +33,20 @@
     -webkit-font-smoothing:antialiased;
   }
   header{
-    padding: 20px 16px 14px;
+    padding: 18px 16px 12px;
     text-align:center;
     position:relative;
   }
   header h1{
-    font-family: 'Fraunces', serif;
     font-weight:600;
-    font-size:21px;
+    font-size:17px;
     margin:0;
-    letter-spacing: -0.01em;
-  }
-  header::after{
-    content:"";
-    display:block;
-    width:34px; height:2px;
-    background: var(--accent);
-    margin:10px auto 0;
+    color: var(--ink);
   }
   #global-saved{
     position:absolute;
     right:16px;
-    top:22px;
+    top:20px;
     font-size:11px;
     color: var(--accent);
     font-weight:500;
@@ -61,137 +55,127 @@
   }
   #global-saved.show{ opacity:1; }
   main{
-    max-width: 420px;
+    max-width: 400px;
     margin: 0 auto;
     padding: 4px 14px 40px;
+  }
+  @media (min-width: 780px){
+    main{ max-width: 860px; }
+    #panel-cal, #panel-mes{ display:grid; grid-template-columns: 340px 1fr; gap:16px; align-items:start; }
   }
   #auth-bar{ text-align:center; padding: 60px 20px; }
   #auth-bar p{ color: var(--ink-soft); font-size:14px; margin-bottom:18px; }
 
   button{
     font-family:'Inter',sans-serif;
-    font-size:12.5px;
-    font-weight:500;
-    border:1px solid transparent;
+    font-size:13px;
+    border:1px solid var(--line-strong);
     background: var(--surface);
-    color: var(--ink-soft);
-    border-radius:9px;
+    color: var(--ink);
+    border-radius:8px;
     padding:9px 12px;
     cursor:pointer;
-    transition: background .15s, color .15s;
+    transition: background .12s;
   }
-  button.primary{ background: var(--accent); color:#fff; }
-  button.primary:hover{ background:#1a4232; }
-  button.danger{ color: var(--danger); background: transparent; }
+  button:hover{ background: var(--surface-1); }
+  button:active{ transform: scale(0.98); }
+  button.danger{ color: var(--danger); }
   button.danger:hover{ background: var(--danger-soft); }
 
-  #tabs{ display:flex; gap:4px; margin:14px 0 16px; background: var(--line-soft); border-radius:10px; padding:3px; }
-  #tabs button{ flex:1; font-size:12.5px; padding:8px 8px; background:transparent; border-radius:8px; }
-  #tabs button.active{ background: var(--surface); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+  #tabs{ display:flex; gap:8px; margin:14px 0 16px; }
+  #tabs button{ flex:1; font-size:13px; }
+  #tabs button.active{ border:2px solid var(--accent-border); color: var(--accent); font-weight:500; }
 
   .card{
     background: var(--surface);
     border:1px solid var(--line);
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:12px;
+    border-radius:12px;
+    padding:16px 18px;
+    margin-bottom:14px;
   }
   .card h2{
-    font-family:'Fraunces',serif;
-    font-weight:600;
+    font-weight:500;
     font-size:15px;
-    margin:0 0 12px;
+    margin:0 0 14px;
+    color: var(--ink);
   }
 
-  .section-title{
-    font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em;
-    color: var(--accent); margin:14px 0 8px;
-  }
-  .section-title:first-of-type{ margin-top:2px; }
-
-  .card-sub{ font-size:10px; color: var(--ink-faint); margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em; }
-  .chip-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .card-sub{ font-size:13px; color: var(--ink-soft); margin:0 0 8px; }
+  .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
   .chip{
-    font-size:12.5px;
+    font-size:13px;
     padding:6px 12px;
-    border-radius:20px;
-    border:1px solid var(--line);
-    background:transparent;
+    border-radius:8px;
+    border:1px solid var(--line-strong);
+    background:var(--surface);
     color: var(--ink-soft);
     cursor:pointer;
     user-select:none;
-    transition: background .12s, border-color .12s, color .12s;
   }
-  .chip.active-sport{ background: var(--accent); border-color: var(--accent); color:#fff; }
-  .chip.active-diet-oui{ background: var(--accent); border-color: var(--accent); color:#fff; }
-  .chip.active-diet-partiel{ background: var(--warn); border-color: var(--warn); color:#fff; }
-  .chip.active-diet-non{ background: var(--danger); border-color: var(--danger); color:#fff; }
+  .chip.active-sport{ background: var(--accent-soft); border-color:transparent; color: var(--accent); }
+  .chip.active-diet-oui{ background: var(--accent-soft); border-color:transparent; color: var(--accent); }
+  .chip.active-diet-partiel{ background: var(--warn-soft); border-color:transparent; color: var(--warn); }
+  .chip.active-diet-non{ background: var(--surface-1); border-color:transparent; color: var(--ink); }
 
   input[type=text], input[type=date], textarea, button{ margin:0; }
   input[type=text], input[type=date], textarea{
     font-family:'Inter',sans-serif;
-    font-variant-numeric: tabular-nums;
     font-size:14px;
-    padding:4px 2px 6px;
-    border:none;
-    border-bottom:1.5px solid var(--line);
-    border-radius:0;
-    background:transparent;
+    padding:8px 10px;
+    border:1px solid var(--line-strong);
+    border-radius:8px;
+    background:var(--surface);
     color:var(--ink);
     width:100%;
+    height:36px;
   }
-  input[type=text]::placeholder{ color: var(--ink-faint); font-variant-numeric: normal; }
-  input:focus, textarea:focus{ outline:none; border-bottom-color: var(--accent); }
-  .field-label{ font-size:10.5px; color: var(--ink-faint); display:block; margin:0 0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  #entry-grid{ display:block; }
-  input[type=date]{
-    max-width:150px; color-scheme: light;
-    border:1px solid var(--line); border-radius:8px; padding:7px 9px;
-    margin-bottom:14px;
-  }
-  .note-input{ margin-top:16px; margin-bottom:14px !important; border:1px solid var(--line) !important; border-radius:8px !important; padding:8px 10px !important; }
+  input[type=text]::placeholder{ color: var(--ink-faint); }
+  input:focus, textarea:focus{ outline:none; box-shadow: 0 0 0 1px var(--accent-border); border-color: var(--accent-border); }
+  .field-label{ font-size:12px; color: var(--ink-faint); display:block; margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #entry-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 8px; margin-bottom:14px; }
+  input[type=date]{ max-width:150px; color-scheme: light; margin-bottom:16px; }
+  .note-input{ margin-bottom:14px; }
   .btn-row{ display:flex; gap:8px; }
   .btn-row button{ flex:1; }
 
-  #cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-  #cal-nav span{ font-size:13px; font-weight:500; font-family:'Fraunces',serif; }
+  #cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  #cal-nav span{ font-size:14px; font-weight:500; }
   #cal-nav i{ cursor:pointer; font-style:normal; font-size:16px; color: var(--ink-faint); padding:3px 8px; }
-  #cal-dow{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:3px; }
-  #cal-dow span{ font-size:9px; color: var(--ink-faint); text-align:center; }
-  #cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:12px; }
+  #cal-dow{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:6px; }
+  #cal-dow span{ font-size:10px; color: var(--ink-faint); text-align:center; }
+  #cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:12px; }
   .cal-day{
-    height:30px;
-    display:flex; align-items:center; justify-content:center; gap:2px;
-    font-size:11.5px; color: var(--ink-soft);
-    border-radius:8px; background: transparent;
+    aspect-ratio:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    font-size:11px; color: var(--ink-soft);
+    border-radius:8px; background: var(--surface-1);
     cursor:pointer;
   }
   .cal-day.empty{ visibility:hidden; cursor:default; }
-  .cal-day.selected{ background: var(--accent); color:#fff; font-weight:500; }
+  .cal-day.selected{ border:2px solid var(--accent-border); }
   .cal-day.today:not(.selected){ font-weight:700; color: var(--ink); }
-  .cal-day.selected .dot{ background:#fff !important; }
   .dot{ width:4px; height:4px; border-radius:50%; display:inline-block; }
-  .dot-sport{ background: var(--accent); }
+  .dot-sport{ background: var(--accent-border); }
   .dot-diet{ background: var(--warn); }
-  #cal-legend{ display:flex; gap:12px; }
-  #cal-legend span{ font-size:10.5px; color: var(--ink-soft); display:flex; align-items:center; gap:4px; }
+  #cal-legend{ display:flex; gap:16px; }
+  #cal-legend span{ font-size:12px; color: var(--ink-soft); display:flex; align-items:center; gap:6px; }
 
-  #metric-picker{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; }
+  #metric-picker{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
   .metric-chip{
-    font-size:11.5px; padding:4px 9px; border-radius:20px;
-    border:1px solid var(--line); background:transparent; color: var(--ink-soft); cursor:pointer;
+    font-size:12px; padding:5px 10px; border-radius:8px;
+    border:1px solid var(--line-strong); background:var(--surface); color: var(--ink-soft); cursor:pointer;
   }
-  .metric-chip.active{ background: var(--accent); border-color: var(--accent); color:#fff; }
-  #scale-picker{ display:flex; gap:5px; margin-bottom:14px; }
+  .metric-chip.active{ background: var(--accent-soft); border-color:transparent; color: var(--accent); }
+  #scale-picker{ display:flex; gap:6px; margin-bottom:14px; }
   .scale-chip{
-    font-size:11.5px; padding:4px 10px; border-radius:20px;
-    border:1px solid transparent; background:var(--line-soft); color: var(--ink-soft); cursor:pointer;
+    font-size:12px; padding:4px 10px; border-radius:8px;
+    border:1px solid var(--line-strong); background:var(--surface); color: var(--ink-soft); cursor:pointer;
   }
-  .scale-chip.active{ background: var(--accent-soft); color: var(--accent); font-weight:500; }
-  #chart-wrap{ position:relative; height:130px; margin-bottom:8px; }
-  #chart-hint{ font-size:10.5px; color: var(--ink-faint); margin:0; text-align:center; }
+  .scale-chip.active{ background: var(--surface-1); border-color:transparent; color: var(--ink); font-weight:500; }
+  #chart-wrap{ position:relative; height:160px; margin-bottom:8px; }
+  #chart-hint{ font-size:11px; color: var(--ink-faint); margin:0; }
   .setup-note{
-    max-width:420px; margin:20px auto; padding:14px 18px;
+    max-width:400px; margin:20px auto; padding:14px 18px;
     background: var(--warn-soft); border:1px solid var(--warn);
     border-radius:10px; font-size:14px; color:#5c4413; display:none;
   }
@@ -302,9 +286,9 @@ const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
 const SHEET_DAILY = "Daily";
 const SHEET_MES = "Mesures";
 const SPORT_TYPES = ["Cardio","Muscu","Vidéo YT","Autre"];
-const METRICS = ["Poids","Fat %","Biceps","Haut cuisse","Bas cuisse","Mollet","Fesses","Hanche/ventre","Taille","Seins","Cou"];
+const METRICS = ["Poids","Fat %","Biceps","Haut cuisse","Bas cuisse","Mollet","Fesses","Hanche/bas ventre","Taille","Seins","Cou"];
 const UNITS   = ["kg","%","cm","cm","cm","cm","cm","cm","cm","cm","cm"];
-const METRIC_COLORS = ["#2f5d54","#a34a3a","#5d7a52","#8a5a7a","#b8862f","#4a6b8a","#6b8a4a","#7a5a8a","#a35a6a","#5a8a7a","#6b6b6b"];
+const METRIC_COLORS = ["#378ADD","#D85A30","#1D9E75","#D4537E","#BA7517","#7F77DD","#639922","#534AB7","#993556","#0F6E56","#5F5E5A"];
 
 let tokenClient, accessToken = null;
 let dailyRows = [];   // {rowIndex, date, sport:[], diet, note}
@@ -597,35 +581,20 @@ els.dailyDelete.addEventListener('click', async () => {
 });
 
 /* ---------- Mesures ---------- */
-const METRIC_GROUPS = [
-  { title: "Général", indices: [0,1,8] },
-  { title: "Haut du corps", indices: [2,9,10] },
-  { title: "Bas du corps", indices: [3,4,5,6,7] }
-];
-
 function buildEntryGrid(){
   els.entryGrid.innerHTML = "";
-  METRIC_GROUPS.forEach(group => {
-    const title = document.createElement('p');
-    title.className = 'section-title';
-    title.textContent = group.title;
-    els.entryGrid.appendChild(title);
-    const grid = document.createElement('div');
-    grid.style.cssText = "display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px;";
-    group.indices.forEach(i => {
-      const cell = document.createElement('div');
-      const label = document.createElement('p');
-      label.className = 'field-label';
-      label.textContent = METRICS[i];
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = UNITS[i];
-      input.id = 'mes-in-'+i;
-      cell.appendChild(label);
-      cell.appendChild(input);
-      grid.appendChild(cell);
-    });
-    els.entryGrid.appendChild(grid);
+  METRICS.forEach((m,i) => {
+    const cell = document.createElement('div');
+    const label = document.createElement('p');
+    label.className = 'field-label';
+    label.textContent = m;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = UNITS[i];
+    input.id = 'mes-in-'+i;
+    cell.appendChild(label);
+    cell.appendChild(input);
+    els.entryGrid.appendChild(cell);
   });
 }
 
