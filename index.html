@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Régime / Muscu Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --line: #e4e4e1;
+    --line-soft: #eeeeec;
+    --ink: #1c1d1b;
+    --ink-soft: #6b6c68;
+    --ink-faint: #9b9c97;
+    --accent: #2f5d54;
+    --accent-soft: #e4ede9;
+    --warn: #b8862f;
+    --warn-soft: #f6ecd9;
+    --danger: #a34a3a;
+    --danger-soft: #f3e4e1;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding: 26px 20px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align:center;
+    position:relative;
+  }
+  header h1{
+    font-family: 'Fraunces', serif;
+    font-weight:600;
+    font-size: 1.4rem;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  #global-saved{
+    position:absolute;
+    right:20px;
+    top:26px;
+    font-size:0.78rem;
+    color: var(--accent);
+    opacity:0;
+    transition: opacity .3s;
+  }
+  #global-saved.show{ opacity:1; }
+  main{
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px 16px 60px;
+  }
+  #auth-bar{
+    text-align:center;
+    padding: 60px 20px;
+  }
+  #auth-bar p{ color: var(--ink-soft); font-size:0.9rem; margin-bottom:18px; }
+  button{
+    font-family:'Inter',sans-serif;
+    font-size:0.88rem;
+    border:1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius:8px;
+    padding:11px 16px;
+    cursor:pointer;
+    transition: background .15s, border-color .15s;
+  }
+  button:hover{ background: var(--line-soft); }
+  button:active{ transform: scale(0.98); }
+  button.primary{ background: var(--ink); color:#fff; border-color: var(--ink); }
+  button.primary:hover{ background:#333; }
+  button.danger{ color: var(--danger); border-color: var(--danger-soft); }
+  button.danger:hover{ background: var(--danger-soft); }
+  #tabs{ display:flex; gap:8px; margin-bottom:16px; }
+  #tabs button{ flex:1; font-size:0.85rem; }
+  #tabs button.active{ border:2px solid var(--accent); color: var(--accent); font-weight:500; }
+  .card{
+    background: var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:14px;
+  }
+  .card h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.02rem;
+    margin:0 0 12px;
+  }
+  .card-sub{ font-size:0.76rem; color: var(--ink-soft); margin:0 0 6px; }
+  .chip-row{ display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px; }
+  .chip{
+    font-size:0.82rem;
+    padding:7px 13px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color: var(--ink-soft);
+    cursor:pointer;
+    user-select:none;
+  }
+  .chip.active-sport{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .chip.active-diet-oui{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .chip.active-diet-partiel{ background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+  .chip.active-diet-non{ background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+  input[type=text], input[type=date], textarea{
+    font-family:'Inter',sans-serif;
+    font-size:0.88rem;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--surface);
+    color:var(--ink);
+    width:100%;
+  }
+  input:focus, textarea:focus{ outline:none; border-color: var(--accent); }
+  .field-label{ font-size:0.7rem; color: var(--ink-faint); display:block; margin-bottom:3px; }
+  .note-input{ margin-bottom:12px; }
+  .btn-row{ display:flex; gap:8px; }
+  .btn-row button{ flex:1; }
+  #entry-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 6px; margin-bottom:12px; }
+  #cal-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  #cal-nav span{ font-size:0.85rem; font-weight:500; }
+  #cal-nav i{ cursor:pointer; font-style:normal; font-size:1rem; color: var(--ink-faint); padding:4px 8px; }
+  #cal-dow{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:4px; }
+  #cal-dow span{ font-size:0.62rem; color: var(--ink-faint); text-align:center; }
+  #cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:10px; }
+  .cal-day{
+    height:32px;
+    display:flex; align-items:center; justify-content:center; gap:2px;
+    font-size:0.72rem; color: var(--ink-soft);
+    border-radius:6px; background: var(--bg);
+    cursor:pointer;
+  }
+  .cal-day.empty{ visibility:hidden; cursor:default; }
+  .cal-day.selected{ border:2px solid var(--accent); color:var(--ink); font-weight:500; }
+  .cal-day.today{ font-weight:600; }
+  .dot{ width:4px; height:4px; border-radius:50%; display:inline-block; }
+  .dot-sport{ background: var(--accent); }
+  .dot-diet{ background: var(--warn); }
+  #cal-legend{ display:flex; gap:12px; }
+  #cal-legend span{ font-size:0.68rem; color: var(--ink-soft); display:flex; align-items:center; gap:4px; }
+  #metric-picker{ display:flex; gap:5px; flex-wrap:wrap; margin-bottom:8px; }
+  .metric-chip{
+    font-size:0.72rem; padding:4px 9px; border-radius:7px;
+    border:1px solid var(--line); background:var(--surface); color: var(--ink-soft); cursor:pointer;
+  }
+  .metric-chip.active{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  #scale-picker{ display:flex; gap:5px; margin-bottom:10px; }
+  .scale-chip{
+    font-size:0.72rem; padding:3px 9px; border-radius:7px;
+    border:1px solid var(--line); background:var(--surface); color: var(--ink-soft); cursor:pointer;
+  }
+  .scale-chip.active{ background: var(--bg); color: var(--ink); font-weight:500; border-color:var(--line); }
+  #chart-wrap{ position:relative; height:150px; margin-bottom:6px; }
+  #chart-hint{ font-size:0.68rem; color: var(--ink-faint); margin:0; }
+  .setup-note{
+    max-width:480px; margin:20px auto; padding:14px 18px;
+    background: var(--warn-soft); border:1px solid var(--warn);
+    border-radius:10px; font-size:0.85rem; color:#5c4413; display:none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Régime / Muscu</h1>
+  <span id="global-saved">Enregistré</span>
+</header>
+
+<div class="setup-note" id="setup-note">
+  Configuration manquante : vérifie CLIENT_ID et SPREADSHEET_ID en haut du script.
+</div>
+
+<main>
+
+  <div id="auth-bar">
+    <p>Connecte-toi pour accéder à ton suivi.</p>
+    <button class="primary" id="btn-signin">Se connecter avec Google</button>
+    <p id="status-line" style="margin-top:14px;font-size:0.8rem;color:var(--ink-faint);"></p>
+  </div>
+
+  <div id="app" style="display:none;">
+    <div id="tabs">
+      <button id="tab-cal" class="active">Calendrier</button>
+      <button id="tab-mes">Mesures</button>
+    </div>
+
+    <!-- ===== ONGLET CALENDRIER ===== -->
+    <div id="panel-cal">
+      <div class="card">
+        <h2 id="daily-date-label">—</h2>
+        <p class="card-sub">Sport</p>
+        <div class="chip-row" id="sport-chips">
+          <span class="chip" data-sport="Cardio">Cardio</span>
+          <span class="chip" data-sport="Muscu">Muscu</span>
+          <span class="chip" data-sport="Vidéo YT">Vidéo YT</span>
+          <span class="chip" data-sport="Autre">Autre</span>
+        </div>
+        <p class="card-sub">Diète</p>
+        <div class="chip-row" id="diet-chips">
+          <span class="chip" data-diet="Oui">Oui</span>
+          <span class="chip" data-diet="Partiel">Partiel</span>
+          <span class="chip" data-diet="Non">Non</span>
+        </div>
+        <input type="text" id="daily-note" class="note-input" placeholder="Note (optionnel)">
+        <div class="btn-row">
+          <button class="primary" id="daily-save">Enregistrer</button>
+          <button class="danger" id="daily-delete">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="cal-nav">
+          <i id="cal-prev">‹</i>
+          <span id="cal-month-label"></span>
+          <i id="cal-next">›</i>
+        </div>
+        <div id="cal-dow">
+          <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+        </div>
+        <div id="cal-grid"></div>
+        <div id="cal-legend">
+          <span><span class="dot dot-sport"></span>Sport</span>
+          <span><span class="dot dot-diet"></span>Diète suivie</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET MESURES ===== -->
+    <div id="panel-mes" style="display:none;">
+      <div class="card">
+        <input type="date" id="mes-date" style="margin-bottom:12px;max-width:170px;">
+        <div id="entry-grid"></div>
+        <input type="text" id="mes-note" class="note-input" placeholder="Note (optionnel)">
+        <div class="btn-row">
+          <button class="primary" id="mes-save">Enregistrer</button>
+          <button class="danger" id="mes-delete">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div id="metric-picker"></div>
+        <div id="scale-picker">
+          <span class="scale-chip" data-scale="30">1 mois</span>
+          <span class="scale-chip active" data-scale="90">3 mois</span>
+          <span class="scale-chip" data-scale="0">Tout</span>
+        </div>
+        <div id="chart-wrap"><canvas id="mchart"></canvas></div>
+        <p id="chart-hint">Touche un point pour charger la date ci-dessus</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+/* ===================== CONFIGURATION ===================== */
+const CLIENT_ID = "815063719481-1e32pi1caur7pv175qivvrlcddpfr6vs.apps.googleusercontent.com";
+const SPREADSHEET_ID = "17FMg0xN7g4r-HTX1ILP2Xw32CD06HDQjWLh-CVD2Q2c";
+/* ============================================================ */
+
+const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
+const SHEET_DAILY = "Daily";
+const SHEET_MES = "Mesures";
+const SPORT_TYPES = ["Cardio","Muscu","Vidéo YT","Autre"];
+const METRICS = ["Poids","Fat %","Biceps","Haut cuisse","Bas cuisse","Mollet","Fesses","Hanche/bas ventre","Taille","Seins","Cou"];
+const UNITS   = ["kg","%","cm","cm","cm","cm","cm","cm","cm","cm","cm"];
+const METRIC_COLORS = ["#2f5d54","#a34a3a","#5d7a52","#8a5a7a","#b8862f","#4a6b8a","#6b8a4a","#7a5a8a","#a35a6a","#5a8a7a","#6b6b6b"];
+
+let tokenClient, accessToken = null;
+let dailyRows = [];   // {rowIndex, date, sport:[], diet, note}
+let mesRows = [];     // {rowIndex, date, vals:[11], note}
+let dailyByDate = {};
+let mesByDate = {};
+
+let calYear, calMonth; // 0-indexed month
+let selectedDailyDate = null;
+let selectedSports = [];
+let selectedDiet = null;
+
+let selectedMetric = 0;
+let selectedScale = 90;
+
+const els = {
+  signin: document.getElementById('btn-signin'),
+  status: document.getElementById('status-line'),
+  app: document.getElementById('app'),
+  authBar: document.getElementById('auth-bar'),
+  setupNote: document.getElementById('setup-note'),
+  globalSaved: document.getElementById('global-saved'),
+  tabCal: document.getElementById('tab-cal'),
+  tabMes: document.getElementById('tab-mes'),
+  panelCal: document.getElementById('panel-cal'),
+  panelMes: document.getElementById('panel-mes'),
+  dailyDateLabel: document.getElementById('daily-date-label'),
+  sportChips: document.getElementById('sport-chips'),
+  dietChips: document.getElementById('diet-chips'),
+  dailyNote: document.getElementById('daily-note'),
+  dailySave: document.getElementById('daily-save'),
+  dailyDelete: document.getElementById('daily-delete'),
+  calMonthLabel: document.getElementById('cal-month-label'),
+  calGrid: document.getElementById('cal-grid'),
+  calPrev: document.getElementById('cal-prev'),
+  calNext: document.getElementById('cal-next'),
+  mesDate: document.getElementById('mes-date'),
+  entryGrid: document.getElementById('entry-grid'),
+  mesNote: document.getElementById('mes-note'),
+  mesSave: document.getElementById('mes-save'),
+  mesDelete: document.getElementById('mes-delete'),
+  metricPicker: document.getElementById('metric-picker'),
+  scalePicker: document.getElementById('scale-picker'),
+  chartHint: document.getElementById('chart-hint'),
+};
+
+if(CLIENT_ID.startsWith("REMPLACE") || SPREADSHEET_ID.startsWith("REMPLACE")){
+  els.setupNote.style.display = "block";
+  els.signin.disabled = true;
+}
+
+window.addEventListener('load', () => {
+  if(window.google && !CLIENT_ID.startsWith("REMPLACE")){
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: (resp) => {
+        if(resp.error){ setStatus("Connexion refusée.", true); return; }
+        accessToken = resp.access_token;
+        onSignedIn();
+      }
+    });
+  }
+});
+
+els.signin.addEventListener('click', () => {
+  if(tokenClient) tokenClient.requestAccessToken({prompt:'consent'});
+});
+
+function setStatus(msg, isError){
+  els.status.textContent = msg || "";
+  els.status.style.color = isError ? "var(--danger)" : "var(--ink-faint)";
+}
+
+function showSaved(){
+  els.globalSaved.classList.add('show');
+  clearTimeout(showSaved._t);
+  showSaved._t = setTimeout(()=> els.globalSaved.classList.remove('show'), 1400);
+}
+
+async function apiFetch(url, options={}){
+  const res = await fetch(url, {
+    ...options,
+    headers: { ...(options.headers||{}), Authorization: `Bearer ${accessToken}` }
+  });
+  if(!res.ok){
+    const t = await res.text();
+    throw new Error(`API ${res.status}: ${t}`);
+  }
+  return res.json();
+}
+
+function onSignedIn(){
+  els.authBar.style.display = "none";
+  els.app.style.display = "block";
+  const today = new Date();
+  calYear = today.getFullYear();
+  calMonth = today.getMonth();
+  els.mesDate.value = toISO(today);
+  buildEntryGrid();
+  buildMetricPicker();
+  loadAll();
+}
+
+/* ---------- Date helpers ---------- */
+function pad2(n){ return n<10 ? "0"+n : ""+n; }
+function toISO(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function toFR(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`; }
+function isoToFR(iso){ const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
+function frToISO(fr){ const [d,m,y] = fr.split('/'); return `${y}-${m}-${d}`; }
+function frLabelShort(fr){ const [d,m] = fr.split('/'); return `${d}/${m}`; }
+const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const DOW_OFFSET = d => (d.getDay()+6)%7; // lundi=0
+
+/* ---------- Chargement ---------- */
+async function loadAll(){
+  setStatus("Chargement...");
+  try{
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values:batchGet?ranges=${encodeURIComponent(SHEET_DAILY+'!A1:D')}&ranges=${encodeURIComponent(SHEET_MES+'!A1:M')}`;
+    const data = await apiFetch(url);
+    const [dv, mv] = data.valueRanges.map(r => r.values || []);
+
+    dailyRows = [];
+    dailyByDate = {};
+    for(let i=1;i<dv.length;i++){
+      const r = dv[i];
+      if(!r || !r[0]) continue;
+      const entry = { rowIndex:i+1, date:r[0], sport:(r[1]||"").split(",").map(s=>s.trim()).filter(Boolean), diet:r[2]||"", note:r[3]||"" };
+      dailyRows.push(entry);
+      dailyByDate[entry.date] = entry;
+    }
+
+    mesRows = [];
+    mesByDate = {};
+    for(let i=1;i<mv.length;i++){
+      const r = mv[i];
+      if(!r || !r[0]) continue;
+      const vals = METRICS.map((_,j)=> r[j+1]!==undefined && r[j+1]!=="" ? parseFloat(String(r[j+1]).replace(',','.')) : null);
+      const entry = { rowIndex:i+1, date:r[0], vals, note:r[12]||"" };
+      mesRows.push(entry);
+      mesByDate[entry.date] = entry;
+    }
+
+    setStatus("");
+    renderCalendar();
+    selectDailyDate(toFR(new Date()));
+    renderChart();
+    loadMesFormForDate(els.mesDate.value);
+  }catch(e){
+    setStatus("Erreur de chargement : " + e.message, true);
+  }
+}
+
+/* ---------- Onglets ---------- */
+els.tabCal.addEventListener('click', () => {
+  els.panelCal.style.display = 'block'; els.panelMes.style.display = 'none';
+  els.tabCal.classList.add('active'); els.tabMes.classList.remove('active');
+});
+els.tabMes.addEventListener('click', () => {
+  els.panelCal.style.display = 'none'; els.panelMes.style.display = 'block';
+  els.tabMes.classList.add('active'); els.tabCal.classList.remove('active');
+});
+
+/* ---------- Calendrier ---------- */
+function renderCalendar(){
+  els.calMonthLabel.textContent = `${MOIS[calMonth]} ${calYear}`;
+  els.calGrid.innerHTML = "";
+  const first = new Date(calYear, calMonth, 1);
+  const nbDays = new Date(calYear, calMonth+1, 0).getDate();
+  const offset = DOW_OFFSET(first);
+  const todayFR = toFR(new Date());
+
+  for(let i=0;i<offset;i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    els.calGrid.appendChild(empty);
+  }
+  for(let day=1; day<=nbDays; day++){
+    const d = new Date(calYear, calMonth, day);
+    const fr = toFR(d);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    if(fr === todayFR) cell.classList.add('today');
+    if(fr === selectedDailyDate) cell.classList.add('selected');
+    const num = document.createElement('span');
+    num.textContent = day;
+    cell.appendChild(num);
+    const entry = dailyByDate[fr];
+    if(entry){
+      if(entry.sport.length){ const dot=document.createElement('span'); dot.className='dot dot-sport'; cell.appendChild(dot); }
+      if(entry.diet === 'Oui' || entry.diet === 'Partiel'){ const dot=document.createElement('span'); dot.className='dot dot-diet'; cell.appendChild(dot); }
+    }
+    cell.addEventListener('click', () => selectDailyDate(fr));
+    els.calGrid.appendChild(cell);
+  }
+}
+
+els.calPrev.addEventListener('click', () => {
+  calMonth--; if(calMonth<0){ calMonth=11; calYear--; }
+  renderCalendar();
+});
+els.calNext.addEventListener('click', () => {
+  calMonth++; if(calMonth>11){ calMonth=0; calYear++; }
+  renderCalendar();
+});
+
+function selectDailyDate(fr){
+  selectedDailyDate = fr;
+  const [d,m,y] = fr.split('/');
+  const dateObj = new Date(y,m-1,d);
+  const jours = ["dim.","lun.","mar.","mer.","jeu.","ven.","sam."];
+  els.dailyDateLabel.textContent = `${jours[dateObj.getDay()]} ${parseInt(d)} ${MOIS[m-1]}`;
+
+  const entry = dailyByDate[fr];
+  selectedSports = entry ? [...entry.sport] : [];
+  selectedDiet = entry ? (entry.diet || null) : null;
+  els.dailyNote.value = entry ? entry.note : "";
+  renderSportChips();
+  renderDietChips();
+  renderCalendar();
+}
+
+function renderSportChips(){
+  els.sportChips.innerHTML = "";
+  SPORT_TYPES.forEach(s => {
+    const chip = document.createElement('span');
+    chip.className = 'chip' + (selectedSports.includes(s) ? ' active-sport' : '');
+    chip.textContent = s;
+    chip.addEventListener('click', () => {
+      if(selectedSports.includes(s)) selectedSports = selectedSports.filter(x=>x!==s);
+      else selectedSports.push(s);
+      renderSportChips();
+    });
+    els.sportChips.appendChild(chip);
+  });
+}
+function renderDietChips(){
+  els.dietChips.innerHTML = "";
+  ["Oui","Partiel","Non"].forEach(v => {
+    const chip = document.createElement('span');
+    let cls = 'chip';
+    if(selectedDiet === v) cls += v==='Oui' ? ' active-diet-oui' : v==='Partiel' ? ' active-diet-partiel' : ' active-diet-non';
+    chip.className = cls;
+    chip.textContent = v;
+    chip.addEventListener('click', () => { selectedDiet = (selectedDiet===v) ? null : v; renderDietChips(); });
+    els.dietChips.appendChild(chip);
+  });
+}
+
+els.dailySave.addEventListener('click', async () => {
+  if(!selectedDailyDate) return;
+  setStatus("Enregistrement...");
+  const rowValues = [selectedDailyDate, selectedSports.join(", "), selectedDiet||"", els.dailyNote.value];
+  try{
+    const existing = dailyByDate[selectedDailyDate];
+    if(existing){
+      const range = `${SHEET_DAILY}!A${existing.rowIndex}:D${existing.rowIndex}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+      await apiFetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({range, values:[rowValues]}) });
+      existing.sport = [...selectedSports]; existing.diet = selectedDiet||""; existing.note = els.dailyNote.value;
+    } else {
+      const range = `${SHEET_DAILY}!A1:D1`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+      const res = await apiFetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({values:[rowValues]}) });
+      const updatedRange = res.updates.updatedRange;
+      const rowIndex = parseInt(updatedRange.match(/(\d+)(?::|$)/)[1]);
+      const entry = { rowIndex, date:selectedDailyDate, sport:[...selectedSports], diet:selectedDiet||"", note: els.dailyNote.value };
+      dailyRows.push(entry);
+      dailyByDate[selectedDailyDate] = entry;
+    }
+    setStatus(""); showSaved(); renderCalendar();
+  }catch(e){ setStatus("Erreur : " + e.message, true); }
+});
+
+els.dailyDelete.addEventListener('click', async () => {
+  if(!selectedDailyDate) return;
+  const existing = dailyByDate[selectedDailyDate];
+  if(!existing){ selectedSports=[]; selectedDiet=null; els.dailyNote.value=""; renderSportChips(); renderDietChips(); return; }
+  setStatus("Suppression...");
+  try{
+    const range = `${SHEET_DAILY}!A${existing.rowIndex}:D${existing.rowIndex}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+    await apiFetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({range, values:[["","","",""]]}) });
+    delete dailyByDate[selectedDailyDate];
+    dailyRows = dailyRows.filter(r => r !== existing);
+    selectedSports=[]; selectedDiet=null; els.dailyNote.value="";
+    renderSportChips(); renderDietChips(); renderCalendar();
+    setStatus(""); showSaved();
+  }catch(e){ setStatus("Erreur : " + e.message, true); }
+});
+
+/* ---------- Mesures ---------- */
+function buildEntryGrid(){
+  els.entryGrid.innerHTML = "";
+  METRICS.forEach((m,i) => {
+    const cell = document.createElement('div');
+    const label = document.createElement('p');
+    label.className = 'field-label';
+    label.textContent = m;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = UNITS[i];
+    input.id = 'mes-in-'+i;
+    cell.appendChild(label);
+    cell.appendChild(input);
+    els.entryGrid.appendChild(cell);
+  });
+}
+
+function buildMetricPicker(){
+  els.metricPicker.innerHTML = "";
+  METRICS.forEach((m,i) => {
+    const chip = document.createElement('span');
+    chip.className = 'metric-chip' + (i===0 ? ' active' : '');
+    chip.textContent = m;
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.metric-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      selectedMetric = i;
+      renderChart();
+    });
+    els.metricPicker.appendChild(chip);
+  });
+}
+
+document.querySelectorAll('.scale-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.scale-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedScale = parseInt(chip.dataset.scale);
+    renderChart();
+  });
+});
+
+function loadMesFormForDate(iso){
+  const fr = isoToFR(iso);
+  const entry = mesByDate[fr];
+  METRICS.forEach((m,i) => {
+    document.getElementById('mes-in-'+i).value = entry && entry.vals[i]!==null ? entry.vals[i] : "";
+  });
+  els.mesNote.value = entry ? entry.note : "";
+}
+els.mesDate.addEventListener('change', () => loadMesFormForDate(els.mesDate.value));
+
+els.mesSave.addEventListener('click', async () => {
+  const fr = isoToFR(els.mesDate.value);
+  const vals = METRICS.map((_,i) => document.getElementById('mes-in-'+i).value.trim());
+  const rowValues = [fr, ...vals, els.mesNote.value];
+  setStatus("Enregistrement...");
+  try{
+    const existing = mesByDate[fr];
+    if(existing){
+      const range = `${SHEET_MES}!A${existing.rowIndex}:M${existing.rowIndex}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+      await apiFetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({range, values:[rowValues]}) });
+      existing.vals = vals.map(v => v!=="" ? parseFloat(v.replace(',','.')) : null);
+      existing.note = els.mesNote.value;
+    } else {
+      const range = `${SHEET_MES}!A1:M1`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+      const res = await apiFetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({values:[rowValues]}) });
+      const updatedRange = res.updates.updatedRange;
+      const rowIndex = parseInt(updatedRange.match(/(\d+)(?::|$)/)[1]);
+      const entry = { rowIndex, date:fr, vals: vals.map(v => v!=="" ? parseFloat(v.replace(',','.')) : null), note: els.mesNote.value };
+      mesRows.push(entry);
+      mesByDate[fr] = entry;
+    }
+    setStatus(""); showSaved(); renderChart();
+  }catch(e){ setStatus("Erreur : " + e.message, true); }
+});
+
+els.mesDelete.addEventListener('click', async () => {
+  const fr = isoToFR(els.mesDate.value);
+  const existing = mesByDate[fr];
+  if(!existing){ loadMesFormForDate(els.mesDate.value); return; }
+  setStatus("Suppression...");
+  try{
+    const range = `${SHEET_MES}!A${existing.rowIndex}:M${existing.rowIndex}`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`;
+    const blank = Array(13).fill("");
+    await apiFetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({range, values:[blank]}) });
+    delete mesByDate[fr];
+    mesRows = mesRows.filter(r => r !== existing);
+    loadMesFormForDate(els.mesDate.value);
+    renderChart();
+    setStatus(""); showSaved();
+  }catch(e){ setStatus("Erreur : " + e.message, true); }
+});
+
+let chartInstance = null;
+function renderChart(){
+  let sorted = [...mesRows].sort((a,b) => frToISO(a.date).localeCompare(frToISO(b.date)));
+  if(selectedScale > 0){
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - selectedScale);
+    sorted = sorted.filter(r => new Date(frToISO(r.date)) >= cutoff);
+  }
+  const labels = sorted.map(r => frLabelShort(r.date));
+  const data = sorted.map(r => r.vals[selectedMetric]);
+  const color = METRIC_COLORS[selectedMetric];
+
+  const ctx = document.getElementById('mchart');
+  if(chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[{ data, borderColor:color, backgroundColor:'transparent', tension:0.3, pointRadius:3, pointHoverRadius:6, borderWidth:2, spanGaps:true }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{ x:{display:false}, y:{ticks:{font:{size:10}}, grid:{color:'rgba(0,0,0,0.06)'}} },
+      onClick:(evt, elements) => {
+        if(elements.length){
+          const idx = elements[0].index;
+          const fr = sorted[idx].date;
+          els.mesDate.value = frToISO(fr);
+          loadMesFormForDate(els.mesDate.value);
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
